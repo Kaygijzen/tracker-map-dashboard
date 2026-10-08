@@ -15,10 +15,12 @@ export const useSidebar = () => useContext(SidebarContext);
 
 interface AppShellProps {
   sidebar: ReactNode;
+  /** Rendered at the right side of the app bar. */
+  actions?: ReactNode;
   children: ReactNode;
 }
 
-export function AppShell({ sidebar, children }: AppShellProps) {
+export function AppShell({ sidebar, actions, children }: AppShellProps) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,6 +44,7 @@ export function AppShell({ sidebar, children }: AppShellProps) {
           <Typography variant="h6" component="h1" noWrap sx={{ flexGrow: 1 }}>
             Tracker Map
           </Typography>
+          {actions}
         </Toolbar>
       </AppBar>
 

@@ -14,6 +14,17 @@ describe('MapStatus', () => {
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
+  it('shows no progress bar when only a background refresh runs', () => {
+    render(<MapStatus loading={false} error={null} />);
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  });
+
+  it('shows the empty state', () => {
+    render(<MapStatus loading={false} error={null} empty />);
+    expect(screen.getByText('No trackers')).toBeInTheDocument();
+    expect(screen.getByText(/keys.json/)).toBeInTheDocument();
+  });
+
   it('renders nothing when idle', () => {
     const { container } = render(<MapStatus loading={false} error={null} />);
     expect(container).toBeEmptyDOMElement();

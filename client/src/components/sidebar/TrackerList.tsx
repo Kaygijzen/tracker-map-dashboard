@@ -13,7 +13,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Tracker } from '../../api/types';
 import { useSelection } from '../../state/selection';
 import { filterTrackers } from '../../utils/filterTrackers';
+import { useNow } from '../../hooks/useNow';
 import { formatRelativeTime } from '../../utils/relativeTime';
+import { isStale } from '../../utils/stale';
 import { useSidebar } from '../AppShell';
 import { StatusChips } from '../common/StatusChips';
 
@@ -39,13 +41,15 @@ function TrackerListItem({
   selected,
   onSelect,
   itemRef,
+  now,
 }: {
   tracker: Tracker;
+  now: Date;
   selected: boolean;
   onSelect: (id: number) => void;
   itemRef: (el: HTMLDivElement | null) => void;
 }) {
-  const lastSeen = tracker.location ? formatRelativeTime(tracker.location.timestamp) : 'No location';
+  const lastSeen = tracker.location ? formatRelativeTime(tracker.location.timestamp, now) : 'No location';
   return (
     <ListItemButton
       ref={itemRef}
@@ -66,7 +70,7 @@ function TrackerListItem({
             <Box component="span" sx={{ display: 'block' }}>
               ID {tracker.id} · {lastSeen}
             </Box>
-            <StatusChips tracker={tracker} sx={{ mt: 0.75 }} />
+            <StatusChips tracker={tracker} stale={isStale(tracker.location, now)} sx={{ mt: 0.75 }} />
           </>
         }
         secondaryTypographyProps={{ component: 'div' }}
@@ -80,6 +84,7 @@ export function TrackerList({ trackers }: { trackers: Tracker[] }) {
   const { selectedId, source, select } = useSelection();
   const { closeMobileSidebar } = useSidebar();
   const itemRefs = useRef(new Map<number, HTMLDivElement>());
+  const now = useNow();
   const shown = useMemo(() => filterTrackers(trackers, query), [trackers, query]);
 
   useEffect(() => {
@@ -122,12 +127,18 @@ export function TrackerList({ trackers }: { trackers: Tracker[] }) {
             tracker={tracker}
             selected={tracker.id === selectedId}
             onSelect={handleSelect}
+            now={now}
             itemRef={(el) => {
               if (el) itemRefs.current.set(tracker.id, el);
               else itemRefs.current.delete(tracker.id);
             }}
           />
         ))}
+        {trackers.length === 0 && (
+          <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 1 }}>
+            No trackers found.
+          </Typography>
+        )}
         {shown.length === 0 && trackers.length > 0 && (
           <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 1 }}>
             No trackers match “{query.trim()}”.
