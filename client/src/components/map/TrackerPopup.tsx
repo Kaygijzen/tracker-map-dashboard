@@ -1,5 +1,6 @@
-import { Box, Chip, Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { Tracker, TrackerLocation } from '../../api/types';
+import { StatusChips } from '../common/StatusChips';
 import { formatRelativeTime } from '../../utils/relativeTime';
 
 export function TrackerPopupContent({ tracker, location }: { tracker: Tracker; location: TrackerLocation }) {
@@ -11,10 +12,7 @@ export function TrackerPopupContent({ tracker, location }: { tracker: Tracker; l
       <Typography variant="caption" color="text.secondary" component="div">
         ID {tracker.id}
       </Typography>
-      <Stack direction="row" spacing={0.5} sx={{ my: 1 }}>
-        <Chip size="small" label={tracker.isDeployed ? 'Deployed' : 'Not deployed'} color={tracker.isDeployed ? 'primary' : 'default'} variant={tracker.isDeployed ? 'filled' : 'outlined'} />
-        <Chip size="small" label={tracker.isActive ? 'Active' : 'Inactive'} color={tracker.isActive ? 'success' : 'default'} variant={tracker.isActive ? 'filled' : 'outlined'} />
-      </Stack>
+      <StatusChips tracker={tracker} sx={{ my: 1 }} />
       <Typography variant="body2">
         Last seen <time dateTime={location.timestamp} title={new Date(location.timestamp).toLocaleString()}>{formatRelativeTime(location.timestamp)}</time>
       </Typography>

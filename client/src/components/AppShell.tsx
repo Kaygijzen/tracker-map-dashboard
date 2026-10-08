@@ -1,8 +1,17 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Drawer, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { useState, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 
 export const DRAWER_WIDTH = 320;
+
+interface SidebarContextValue {
+  /** Closes the temporary drawer on mobile; no-op on desktop. */
+  closeMobileSidebar: () => void;
+}
+
+const SidebarContext = createContext<SidebarContextValue>({ closeMobileSidebar: () => {} });
+
+export const useSidebar = () => useContext(SidebarContext);
 
 interface AppShellProps {
   sidebar: ReactNode;
@@ -13,6 +22,7 @@ export function AppShell({ sidebar, children }: AppShellProps) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const sidebarContext = useMemo(() => ({ closeMobileSidebar: () => setMobileOpen(false) }), []);
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -47,7 +57,9 @@ export function AppShell({ sidebar, children }: AppShellProps) {
         }}
       >
         <Toolbar />
-        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>{sidebar}</Box>
+        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <SidebarContext.Provider value={sidebarContext}>{sidebar}</SidebarContext.Provider>
+        </Box>
       </Drawer>
 
       <Box component="main" sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>

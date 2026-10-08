@@ -22,6 +22,8 @@
 - **Filtering** in a pure `filterTrackers(trackers, query)` helper (unit tested): trims, lowercases; matches `name.toLowerCase().includes(q)` or `String(id).includes(q)`.
 - **Scroll into view**: each item has `ref` keyed by id; when `selectedId` changes and the source is `'map'`, call `scrollIntoView({ block: 'nearest' })`.
 
+- **Disabled items**: MUI's disabled `ListItemButton` (a `div`) blocks pointer events only through CSS, so the click handler also checks for a location.
+
 ## Risks / Trade-offs
 
 - [`moveend` from an unrelated user pan opens the popup] → the listener is registered with `once` right before `flyTo`, and removed if the selection changes before it fires.
