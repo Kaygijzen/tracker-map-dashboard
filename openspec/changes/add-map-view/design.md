@@ -23,6 +23,7 @@
 - **Leaflet CSS**: `import 'leaflet/dist/leaflet.css'` in `main.tsx`.
 - **Loading/error UI**: an absolutely positioned overlay at the top of the main area (`LinearProgress`, `Alert severity="error"`), placed above the map with a z-index higher than Leaflet panes (> 1000) so it doesn't shift the map layout.
 - **Dark mode**: tiles stay standard OSM; popups use MUI theme colors through Leaflet's popup styles overridden in a small CSS block (`.leaflet-popup-content-wrapper` background/text from the theme).
+- **Popup spacing**: Leaflet's `.leaflet-popup-content p` margin is reset to 0 so MUI Typography spacing applies.
 - **Tests**: vitest + jsdom + Testing Library for `relativeTime`, `fetchTrackers` (mocked `fetch`) and the loading/error overlay. Leaflet rendering itself is verified in the browser (jsdom has no layout).
 
 ## Risks / Trade-offs

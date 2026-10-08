@@ -1,7 +1,12 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { AppShell } from './components/AppShell';
+import { MapStatus } from './components/map/MapStatus';
+import { TrackerMap } from './components/map/TrackerMap';
+import { useTrackers } from './hooks/useTrackers';
 
 export default function App() {
+  const { trackers, loading, error } = useTrackers();
+
   return (
     <AppShell
       sidebar={
@@ -10,9 +15,8 @@ export default function App() {
         </Typography>
       }
     >
-      <Box sx={{ height: '100%', display: 'grid', placeItems: 'center' }}>
-        <Typography color="text.secondary">Map will appear here.</Typography>
-      </Box>
+      <TrackerMap trackers={trackers} loaded={!loading && !error} />
+      <MapStatus loading={loading} error={error} />
     </AppShell>
   );
 }
