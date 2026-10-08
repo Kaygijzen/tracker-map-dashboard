@@ -24,6 +24,8 @@ Greenfield repo: only `plan.md`, `openspec/`, `.gitignore` (already ignores `nod
 - **Layout:** `AppShell` component with props `sidebar` and `children`. Uses MUI's "responsive drawer" pattern: `useMediaQuery(theme.breakpoints.up('md'))` (900px) chooses `variant="permanent"` vs `variant="temporary"`; drawer width 320px; `AppBar position="fixed"` with `zIndex` above the drawer; a `Toolbar` spacer pushes content down. The root is `height: 100vh` with `display: flex` and `overflow: hidden` so the main area can host a full-size map. Temporary drawer uses `ModalProps={{ keepMounted: true }}`.
 - Sidebar placeholder content for now: a short "Trackers will appear here" text.
 
+- **Versions:** Vite 7 (needs Node 20.19+), Express 5, vitest 4 in both workspaces. Vite 5 was tried first, but vitest pulled a second Vite into the hoisted root and broke `@vitejs/plugin-react` typing; one shared Vite major avoids that. vitest 4 fixes the advisories reported for vitest 3.
+
 ## Risks / Trade-offs
 
 - [Port 3001 already in use] → `PORT`/`API_PORT` env vars override it.
