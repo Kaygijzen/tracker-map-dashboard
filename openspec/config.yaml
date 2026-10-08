@@ -30,3 +30,14 @@ schema: spec-driven
 #     archive:
 #       guidance:
 #         - Summarize the archive outcome before finishing
+
+context: |
+  Stack: React 18 + TypeScript (Vite), Material UI v5 (@mui/material), react-leaflet with OpenStreetMap tiles, small Node/Express API in /server.
+  keys.json contains secret privateKey values: it is read server-side only, never imported by frontend code, never committed.
+  Trackers are uniquely identified by `id` (names may repeat).
+  Keep it basic: no auth, no database, single-user local tool.
+rules:
+  proposal:
+    - Always state what is out of scope
+  tasks:
+    - Keep tasks small and independently verifiable
