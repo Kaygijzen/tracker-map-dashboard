@@ -24,11 +24,15 @@ The map SHALL show one marker for every tracker returned by `GET /api/trackers` 
 - **THEN** both get their own marker
 
 ### Requirement: Marker popup
-Clicking a marker SHALL open a popup showing the tracker's name, id, whether it is deployed, whether it is active, and how long ago its location was recorded as a relative time (for example "5 minutes ago").
+Clicking a marker SHALL select that tracker and open a popup showing the tracker's name, id, whether it is deployed, whether it is active, and how long ago its location was recorded as a relative time (for example "5 minutes ago"). Closing the popup SHALL clear the selection.
 
 #### Scenario: Open popup
 - **WHEN** the user clicks a tracker's marker
 - **THEN** a popup opens with that tracker's name, id, deployed and active status, and a relative "last seen" time
+
+#### Scenario: Close popup clears selection
+- **WHEN** the user closes the open popup
+- **THEN** no tracker is selected
 
 ### Requirement: Initial viewport
 On the first successful load the map SHALL fit its view to include all markers. With exactly one marker it SHALL center on it at a street-level zoom. With no markers it SHALL show a fixed default view centered on 52.37, 4.89.
@@ -58,3 +62,17 @@ The map SHALL redraw to its container's new size whenever the container is resiz
 #### Scenario: Resize to mobile and back
 - **WHEN** the viewport changes from 1280px to 375px wide and back
 - **THEN** the map tiles cover the whole main area each time
+
+### Requirement: Selected marker emphasis
+The selected tracker's marker SHALL be drawn larger and with a thicker outline than other markers and above them.
+
+#### Scenario: Emphasized marker
+- **WHEN** a tracker is selected
+- **THEN** its marker is larger than unselected markers
+
+### Requirement: Fly to selected tracker
+When a tracker is selected from outside the map (for example the sidebar), the map SHALL animate to the tracker's position, at street-level zoom or closer if already zoomed in further, and then open its popup.
+
+#### Scenario: External selection
+- **WHEN** a tracker with a location is selected in the sidebar
+- **THEN** the map moves to center on its marker and opens that marker's popup
