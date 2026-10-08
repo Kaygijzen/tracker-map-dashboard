@@ -62,6 +62,27 @@ describe('TrackerList', () => {
     expect(item(5253030)).toHaveClass('Mui-selected');
   });
 
+  it('shows an Outdated chip for locations older than 1 hour', () => {
+    const old = { ...trackers[0], location: { ...trackers[0].location!, timestamp: new Date(Date.now() - 2 * 3600_000).toISOString() } };
+    render(
+      <SelectionProvider>
+        <TrackerList trackers={[old, trackers[1]]} />
+      </SelectionProvider>,
+    );
+    expect(within(item(6253030)).getByText('Outdated')).toBeInTheDocument();
+    expect(within(item(5253030)).queryByText('Outdated')).toBeNull();
+  });
+
+  it('shows an empty message with no trackers', () => {
+    render(
+      <SelectionProvider>
+        <TrackerList trackers={[]} />
+      </SelectionProvider>,
+    );
+    expect(screen.getByText('No trackers found.')).toBeInTheDocument();
+    expect(screen.getByText('Showing 0 of 0')).toBeInTheDocument();
+  });
+
   it('does not select a disabled item', () => {
     setup();
     fireEvent.click(item(42));

@@ -7,3 +7,4 @@ keys.json
 .claude/settings.local.json
 .playwright-mcp/
 .claude/worktrees/
+!.env.example

@@ -1,25 +1,81 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchTrackers } from '../api/client';
 import type { Tracker } from '../api/types';
+import { REFRESH_INTERVAL_MS } from '../config';
 
 export interface TrackersState {
   trackers: Tracker[];
-  loading: boolean;
+  /** True until the first request finishes. */
+  initialLoading: boolean;
+  /** True while any request is in flight. */
+  refreshing: boolean;
+  /** Error from the first load; cleared by the next success. */
   error: Error | null;
+  /** Error from a background refresh after data was shown; cleared by the next success. */
+  refreshError: Error | null;
+  lastUpdated: Date | null;
 }
 
-export function useTrackers(): TrackersState {
-  const [state, setState] = useState<TrackersState>({ trackers: [], loading: true, error: null });
+export interface UseTrackersResult extends TrackersState {
+  refresh: () => void;
+}
+
+const INITIAL: TrackersState = {
+  trackers: [],
+  initialLoading: true,
+  refreshing: true,
+  error: null,
+  refreshError: null,
+  lastUpdated: null,
+};
+
+/** Loads trackers and keeps them fresh by polling; each poll is scheduled after the previous one finishes. */
+export function useTrackers({ intervalMs = REFRESH_INTERVAL_MS }: { intervalMs?: number } = {}): UseTrackersResult {
+  const [state, setState] = useState<TrackersState>(INITIAL);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const inFlight = useRef(false);
+  const hasData = useRef(false);
+  const controller = useRef<AbortController>();
+  const load = useRef<() => void>(() => {});
+
+  load.current = () => {
+    if (inFlight.current) return;
+    clearTimeout(timer.current);
+    inFlight.current = true;
+    setState((s) => (s.refreshing ? s : { ...s, refreshing: true }));
+    const signal = controller.current?.signal;
+
+    fetchTrackers(signal)
+      .then((trackers) => {
+        hasData.current = true;
+        setState({ trackers, initialLoading: false, refreshing: false, error: null, refreshError: null, lastUpdated: new Date() });
+      })
+      .catch((error: Error) => {
+        if (error.name === 'AbortError') return;
+        setState((s) =>
+          hasData.current
+            ? { ...s, refreshing: false, refreshError: error }
+            : { ...s, initialLoading: false, refreshing: false, error },
+        );
+      })
+      .finally(() => {
+        if (signal?.aborted) return;
+        inFlight.current = false;
+        timer.current = setTimeout(() => load.current(), intervalMs);
+      });
+  };
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetchTrackers(controller.signal)
-      .then((trackers) => setState({ trackers, loading: false, error: null }))
-      .catch((error: Error) => {
-        if (error.name !== 'AbortError') setState((s) => ({ ...s, loading: false, error }));
-      });
-    return () => controller.abort();
-  }, []);
+    controller.current = new AbortController();
+    inFlight.current = false;
+    load.current();
+    return () => {
+      controller.current?.abort();
+      clearTimeout(timer.current);
+    };
+  }, [intervalMs]);
 
-  return state;
+  const refresh = useCallback(() => load.current(), []);
+
+  return { ...state, refresh };
 }
