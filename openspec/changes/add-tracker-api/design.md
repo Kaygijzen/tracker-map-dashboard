@@ -22,12 +22,15 @@
   - `location/provider.ts`: `interface LocationProvider { getLatestLocation(trackerId: number): Promise<Location | null> }`. Async from the start, because a real provider will do network I/O.
   - `location/mock.ts`: `MockLocationProvider({ center })`.
   - `app.ts`: `createApp({ trackers, locationProvider })`; `/api/trackers` maps trackers and awaits locations with `Promise.all`.
+  - `paths.ts`: `REPO_ROOT`, resolved from the module location.
   - `config.ts`: reads `KEYS_FILE`, `MOCK_CENTER_LAT/LNG`, `PORT`.
 - **Validation errors without values**: format `ZodError.issues` as `entry[<index>].<field>: <message>` only. zod's default messages for these checks ("Expected number, received string") do not embed values. Duplicate-id check runs after parsing; ids are not secret.
 - **Missing file → empty list with warning; invalid file → throw** from `loadKeysFile`, and `index.ts` logs the message and exits with code 1. A missing file is a normal first-run state; a broken file is a mistake that must be fixed.
 - **Path resolution**: the default is `keys.json` in the repo root, resolved from the server module location (`../../keys.json` relative to `server/src` or `server/dist`), not from `process.cwd()`, because `npm run dev -w server` runs with cwd `server/`. A relative `KEYS_FILE` resolves against the repo root for the same reason.
 - **Mock positions**: hash the id with a 32-bit FNV-1a variant into two deterministic values in [0,1); place the base point at distance `sqrt(u)*5km` and bearing `v*2π` from the center (uniform over the disc). Convert meters to degrees with `lat: m/111_320`, `lng: m/(111_320·cos(lat))`. Drift: uniform random point within 50 m on each call (`Math.random`). `accuracyMeters`: deterministic 5–50 m from the hash. Alternative: seeded PRNG library — unnecessary.
 - **Response wrapper** `{ trackers: [...] }` instead of a bare array, so fields like a server timestamp can be added later without breaking clients.
+
+- **zod 4** (current major). Test fixtures live in `src/test/` and are excluded from the `tsc` build.
 
 ## Risks / Trade-offs
 
