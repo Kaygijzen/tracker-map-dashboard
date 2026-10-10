@@ -6,9 +6,9 @@ import { TrackerList } from './TrackerList';
 
 const fiveMinutesAgo = () => new Date(Date.now() - 5 * 60 * 1000).toISOString();
 const trackers: Tracker[] = [
-  { id: 6253030, name: 'rotokey_13', color: '#00ff00', isDeployed: true, isActive: false, location: { lat: 52.37, lng: 4.89, timestamp: fiveMinutesAgo(), accuracyMeters: 10 } },
-  { id: 5253030, name: 'rotokey_13', color: '#00ff00', isDeployed: true, isActive: false, location: { lat: 52.36, lng: 4.88, timestamp: fiveMinutesAgo(), accuracyMeters: 10 } },
-  { id: 42, name: 'Bike', color: '#ff0000', isDeployed: false, isActive: true, location: null },
+  { id: 6253030, name: 'rotokey_13', color: '#00ff00', icon: null, isDeployed: true, isActive: false, location: { lat: 52.37, lng: 4.89, timestamp: fiveMinutesAgo(), accuracyMeters: 10 } },
+  { id: 5253030, name: 'rotokey_13', color: '#00ff00', icon: null, isDeployed: true, isActive: false, location: { lat: 52.36, lng: 4.88, timestamp: fiveMinutesAgo(), accuracyMeters: 10 } },
+  { id: 42, name: 'Bike', color: '#ff0000', icon: '🚲', isDeployed: false, isActive: true, location: null },
 ];
 
 function SelectedId() {

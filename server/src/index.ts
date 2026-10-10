@@ -19,8 +19,13 @@ try {
 const locationProvider = createLocationProvider(config, entries);
 const trackers = entries.map(toTracker);
 
-createApp({ trackers, locationProvider }).listen(config.port, () => {
+createApp({ trackers, locationProvider, clientDir: config.clientDir }).listen(config.port, (error) => {
+  if (error) {
+    console.error(`Could not listen on port ${config.port}: ${(error as NodeJS.ErrnoException).code ?? error.message}`);
+    process.exit(1);
+  }
+  const what = config.clientDir ? 'Dashboard' : 'API';
   console.log(
-    `API listening on http://localhost:${config.port} (${trackers.length} trackers, ${config.locationProvider} locations)`,
+    `${what} listening on http://localhost:${config.port} (${trackers.length} trackers, ${config.locationProvider} locations)`,
   );
 });

@@ -15,6 +15,8 @@ export interface Config {
   keysFile: string;
   mockCenter: { lat: number; lng: number };
   locationProvider: LocationProviderName;
+  /** Built client to serve next to the API. Set only when `NODE_ENV=production`. */
+  clientDir?: string;
   /** Set only when `locationProvider` is `findmy`. Holds credentials: never log it. */
   findMy?: FindMyConfig;
 }
@@ -63,6 +65,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       lng: numberFromEnv(env.MOCK_CENTER_LNG, DEFAULT_CENTER.lng),
     },
     locationProvider,
+    ...(env.NODE_ENV === 'production' && { clientDir: path.join(REPO_ROOT, 'client/dist') }),
     ...(locationProvider === 'findmy' && { findMy: loadFindMyConfig(env) }),
   };
 }

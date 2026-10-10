@@ -5,9 +5,11 @@ import type { Tracker, TrackerWithLocation } from './trackers.js';
 export interface AppDeps {
   trackers: Tracker[];
   locationProvider: LocationProvider;
+  /** When set, the built client in this directory is served at `/`. */
+  clientDir?: string;
 }
 
-export function createApp({ trackers, locationProvider }: AppDeps) {
+export function createApp({ trackers, locationProvider, clientDir }: AppDeps) {
   const app = express();
 
   app.get('/api/health', (_req, res) => {
@@ -31,6 +33,8 @@ export function createApp({ trackers, locationProvider }: AppDeps) {
   app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
+
+  if (clientDir) app.use(express.static(clientDir));
 
   return app;
 }

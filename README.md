@@ -23,12 +23,13 @@ Other scripts, run from the repository root:
 
 | Command | What it does |
 | --- | --- |
+| `npm run prod` | Builds everything, then starts the compiled server with `.env` loaded (`node --env-file=.env`) and `NODE_ENV=production`. The server also serves the built client, so the whole dashboard runs on http://localhost:3001. Fails if `.env` is missing. |
 | `npm test` | Runs the server and client test suites (Vitest). |
 | `npm run build` | Type-checks and builds the server (`server/dist`) and the client (`client/dist`). |
 
 ## Environment variables
 
-Server variables are read from the environment when the API starts, for example `LOCATION_PROVIDER=findmy npm run dev`.
+Server variables are read from the environment when the API starts, for example `LOCATION_PROVIDER=findmy npm run dev`. `npm run dev` does not load `.env`; `npm run prod` does. Variables already set in your shell override the ones in `.env` (e.g. `PORT=3002 npm run prod`).
 
 | Variable | Default | Description |
 | --- | --- | --- |

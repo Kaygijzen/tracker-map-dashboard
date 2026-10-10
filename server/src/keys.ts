@@ -11,6 +11,7 @@ const keyEntrySchema = z.object({
   colorComponents: z.array(z.number()).length(4),
   isDeployed: z.boolean(),
   isActive: z.boolean(),
+  icon: z.string().optional(),
   usesDerivation: z.boolean().optional(),
   privateKey: z.string(),
   additionalKeys: z.array(z.unknown()).optional(),
@@ -66,5 +67,14 @@ export function loadKeysFile(filePath: string, warn: (message: string) => void =
     }
     throw new KeysFileError(`Could not read keys file at ${filePath}`);
   }
-  return parseKeysFile(content, filePath);
+  const entries = parseKeysFile(content, filePath);
+  const idsByColor = new Map<string, number[]>();
+  for (const entry of entries) {
+    const key = entry.colorComponents.slice(0, 3).join(',');
+    idsByColor.set(key, [...(idsByColor.get(key) ?? []), entry.id]);
+  }
+  for (const ids of idsByColor.values()) {
+    if (ids.length > 1) warn(`Trackers ${ids.join(', ')} share the same color; give each one a unique colorComponents.`);
+  }
+  return entries;
 }

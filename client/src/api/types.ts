@@ -12,6 +12,8 @@ export interface Tracker {
   name: string;
   /** `#rrggbb` */
   color: string;
+  /** An emoji, or null. */
+  icon: string | null;
   isDeployed: boolean;
   isActive: boolean;
   location: TrackerLocation | null;

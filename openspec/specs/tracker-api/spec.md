@@ -36,7 +36,7 @@ The API SHALL validate the keys file at startup and refuse to start if it is not
 - **THEN** both trackers are served
 
 ### Requirement: Trackers endpoint
-The API SHALL respond to `GET /api/trackers` with HTTP 200 and a JSON body `{ "trackers": [...] }` holding one object per tracker in file order. Each object SHALL have exactly the fields `id` (number), `name` (string), `color` (string), `isDeployed` (boolean), `isActive` (boolean) and `location`.
+The API SHALL respond to `GET /api/trackers` with HTTP 200 and a JSON body `{ "trackers": [...] }` holding one object per tracker in file order. Each object SHALL have exactly the fields `id` (number), `name` (string), `color` (string), `icon` (an emoji string, or `null` when the entry's `icon` is missing or not an emoji), `isDeployed` (boolean), `isActive` (boolean) and `location`.
 
 #### Scenario: Tracker list
 - **WHEN** the keys file has two entries and a client sends `GET /api/trackers`

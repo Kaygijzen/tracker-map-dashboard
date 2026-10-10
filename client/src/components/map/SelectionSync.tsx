@@ -6,7 +6,7 @@ import { useSelection } from '../../state/selection';
 const FLY_ZOOM = 15;
 
 /** Flies to and opens the popup of trackers selected outside the map (e.g. the sidebar). */
-export function SelectionSync({ markers }: { markers: MutableRefObject<Map<number, L.CircleMarker>> }) {
+export function SelectionSync({ markers }: { markers: MutableRefObject<Map<number, L.Marker>> }) {
   const map = useMap();
   const { selectedId, source } = useSelection();
 

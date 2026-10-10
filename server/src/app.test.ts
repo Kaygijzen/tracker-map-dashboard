@@ -1,3 +1,6 @@
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { createApp } from './app.js';
@@ -26,6 +29,18 @@ describe('api', () => {
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
   });
+
+  it('serves the built client when clientDir is set, and keeps /api 404s as JSON', async () => {
+    const clientDir = mkdtempSync(path.join(tmpdir(), 'client-'));
+    writeFileSync(path.join(clientDir, 'index.html'), '<title>Tracker Map</title>');
+    const withClient = createApp({ trackers: [], locationProvider: mock, clientDir });
+    const page = await request(withClient).get('/');
+    expect(page.status).toBe(200);
+    expect(page.text).toContain('Tracker Map');
+    const missing = await request(withClient).get('/api/does-not-exist');
+    expect(missing.status).toBe(404);
+    expect(missing.body).toHaveProperty('error');
+  });
 });
 
 describe('GET /api/trackers', () => {
@@ -35,7 +50,7 @@ describe('GET /api/trackers', () => {
     expect(res.body.trackers).toHaveLength(2);
     expect(res.body.trackers.map((t: { id: number }) => t.id)).toEqual([1001, 1002]);
     for (const tracker of res.body.trackers) {
-      expect(Object.keys(tracker).sort()).toEqual(['color', 'id', 'isActive', 'isDeployed', 'location', 'name']);
+      expect(Object.keys(tracker).sort()).toEqual(['color', 'icon', 'id', 'isActive', 'isDeployed', 'location', 'name']);
       expect(Object.keys(tracker.location).sort()).toEqual(['accuracyMeters', 'lat', 'lng', 'timestamp']);
       expect(new Date(tracker.location.timestamp).toISOString()).toBe(tracker.location.timestamp);
     }
