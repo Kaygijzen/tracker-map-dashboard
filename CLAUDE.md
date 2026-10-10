@@ -16,3 +16,5 @@ After implementing UI changes, verify them in a browser before you call a task d
 4. Fix any issues and repeat until the feature works with no console errors.
 
 Never print or return `privateKey` values from `keys.json`, including in screenshots, logs or API responses.
+
+Never use 'npm run prod' or 'npm run build' to verify changes, as the production build is not currently working. Use the dev server instead.
