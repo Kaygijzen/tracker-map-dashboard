@@ -1,3 +1,6 @@
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { createApp } from './app.js';
@@ -25,6 +28,18 @@ describe('api', () => {
     const res = await request(app()).get('/api/does-not-exist');
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
+  });
+
+  it('serves the built client when clientDir is set, and keeps /api 404s as JSON', async () => {
+    const clientDir = mkdtempSync(path.join(tmpdir(), 'client-'));
+    writeFileSync(path.join(clientDir, 'index.html'), '<title>Tracker Map</title>');
+    const withClient = createApp({ trackers: [], locationProvider: mock, clientDir });
+    const page = await request(withClient).get('/');
+    expect(page.status).toBe(200);
+    expect(page.text).toContain('Tracker Map');
+    const missing = await request(withClient).get('/api/does-not-exist');
+    expect(missing.status).toBe(404);
+    expect(missing.body).toHaveProperty('error');
   });
 });
 

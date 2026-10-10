@@ -19,6 +19,11 @@ describe('loadConfig', () => {
     expect(loadConfig({ KEYS_FILE: '/tmp/other.json' }).keysFile).toBe('/tmp/other.json');
   });
 
+  it('serves the built client only in production', () => {
+    expect(loadConfig({}).clientDir).toBeUndefined();
+    expect(loadConfig({ NODE_ENV: 'production' }).clientDir).toBe(path.join(REPO_ROOT, 'client/dist'));
+  });
+
   it('points at the repository root', () => {
     expect(path.basename(REPO_ROOT)).not.toBe('server');
   });
