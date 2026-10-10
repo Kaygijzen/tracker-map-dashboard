@@ -1,21 +1,26 @@
 import { createApp } from './app.js';
-import { loadConfig } from './config.js';
-import { KeysFileError, loadKeysFile } from './keys.js';
-import { MockLocationProvider } from './location/mock.js';
+import { ConfigError, loadConfig } from './config.js';
+import { type KeyEntry, KeysFileError, loadKeysFile } from './keys.js';
+import { createLocationProvider } from './location/factory.js';
 import { toTracker } from './trackers.js';
 
-const config = loadConfig();
-
-let trackers;
+let config;
+let entries: KeyEntry[];
 try {
-  trackers = loadKeysFile(config.keysFile).map(toTracker);
+  config = loadConfig();
+  entries = loadKeysFile(config.keysFile);
 } catch (error) {
-  console.error(error instanceof KeysFileError ? error.message : 'Failed to load keys file');
+  if (error instanceof ConfigError || error instanceof KeysFileError) console.error(error.message);
+  else console.error('Failed to load configuration or keys file');
   process.exit(1);
 }
 
-const locationProvider = new MockLocationProvider({ center: config.mockCenter });
+// Full entries (with secrets) go only to the location provider; routes get the public shape.
+const locationProvider = createLocationProvider(config, entries);
+const trackers = entries.map(toTracker);
 
 createApp({ trackers, locationProvider }).listen(config.port, () => {
-  console.log(`API listening on http://localhost:${config.port} (${trackers.length} trackers)`);
+  console.log(
+    `API listening on http://localhost:${config.port} (${trackers.length} trackers, ${config.locationProvider} locations)`,
+  );
 });

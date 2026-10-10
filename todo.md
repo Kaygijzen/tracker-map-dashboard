@@ -2,9 +2,9 @@
 
 Leftover work after changes 1–5 of `plan.md` were implemented and archived.
 
-## 1. Change 6 — `add-findmy-location-provider` (optional, not started)
+## 1. Change 6 — `add-findmy-location-provider` (done)
 
-Blocked: the Claude Code permission classifier refused actions that touch the trackers' private keys and Apple tokens. To continue, allow those actions (for example with a Bash permission rule) and run the plan's Change 6 prompt through `/opsx:propose` → `/opsx:apply` → `/opsx:archive`.
+- [x] Implemented in `server/src/location/findmy/`. Select it with `LOCATION_PROVIDER=findmy`; see the README for setup.
 
 Research notes for the implementation (sources: [OpenHaystack](https://github.com/seemoo-lab/openhaystack), [macless-haystack](https://github.com/dchristl/macless-haystack), [FindMy.py](https://github.com/malmeloo/findmy.py)):
 
@@ -35,7 +35,7 @@ Research notes for the implementation (sources: [OpenHaystack](https://github.co
 
 ## 2. README
 
-- [ ] Add `README.md` covering: Node 20 (`nvm use`), `npm install`, `npm run dev`, `npm test`, env vars (`PORT`, `KEYS_FILE`, `MOCK_CENTER_LAT`, `MOCK_CENTER_LNG`, `VITE_REFRESH_INTERVAL_MS`), and the rule that `keys.json` is never committed. Change 6 extends it with the Find My setup.
+- [x] Add `README.md` covering: Node 20 (`nvm use`), `npm install`, `npm run dev`, `npm test`, env vars (`PORT`, `KEYS_FILE`, `MOCK_CENTER_LAT`, `MOCK_CENTER_LNG`, `VITE_REFRESH_INTERVAL_MS`), and the rule that `keys.json` is never committed. Change 6 extends it with the Find My setup.
 
 ## 3. Cleanup
 

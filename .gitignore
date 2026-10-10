@@ -8,3 +8,5 @@ keys.json
 .playwright-mcp/
 .claude/worktrees/
 !.env.example
+findmy-account.json
+env/
