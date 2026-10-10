@@ -1,6 +1,6 @@
 # Tracker Map Dashboard
 
-See `plan.md` for the roadmap and `openspec/` for specs and changes.
+See `openspec/` for specs and changes.
 
 ## Environment
 
