@@ -5,7 +5,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('fetchTrackers', () => {
   it('returns the trackers array', async () => {
-    const trackers = [{ id: 1, name: 'a', color: '#00ff00', isDeployed: true, isActive: false, location: null }];
+    const trackers = [{ id: 1, name: 'a', color: '#00ff00', icon: null, isDeployed: true, isActive: false, location: null }];
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ trackers }), { status: 200 })));
     await expect(fetchTrackers()).resolves.toEqual(trackers);
     expect(fetch).toHaveBeenCalledWith('/api/trackers', expect.anything());

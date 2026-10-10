@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { colorToHex, toTracker } from './trackers.js';
+import { colorToHex, toEmojiIcon, toTracker } from './trackers.js';
 import { entries } from './test/fixtures.js';
 
 describe('colorToHex', () => {
@@ -19,8 +19,22 @@ describe('toTracker', () => {
       id: 1001,
       name: 'rotokey_13',
       color: '#00ff00',
+      icon: null,
       isDeployed: true,
       isActive: false,
     });
+  });
+});
+
+describe('toEmojiIcon', () => {
+  it('keeps emoji, including multi-codepoint ones', () => {
+    expect(toEmojiIcon('🚲')).toBe('🚲');
+    expect(toEmojiIcon(' 🧑‍💻 ')).toBe('🧑‍💻');
+  });
+
+  it('returns null for missing, empty or non-emoji icons', () => {
+    expect(toEmojiIcon(undefined)).toBeNull();
+    expect(toEmojiIcon('')).toBeNull();
+    expect(toEmojiIcon('airtag')).toBeNull();
   });
 });

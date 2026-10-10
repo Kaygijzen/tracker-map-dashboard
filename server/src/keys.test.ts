@@ -48,4 +48,14 @@ describe('loadKeysFile', () => {
     writeFileSync(file, JSON.stringify([rawEntry()]));
     expect(loadKeysFile(file)).toHaveLength(1);
   });
+
+  it('warns when trackers share a color', () => {
+    const dir = mkdtempSync(path.join(tmpdir(), 'keys-'));
+    const file = path.join(dir, 'keys.json');
+    writeFileSync(file, JSON.stringify([rawEntry(), rawEntry({ id: 1002 }), rawEntry({ id: 1003, colorComponents: [1, 0, 0, 1] })]));
+    const warn = vi.fn();
+    loadKeysFile(file, warn);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('1001, 1002'));
+  });
 });

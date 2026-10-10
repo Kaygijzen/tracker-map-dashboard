@@ -7,6 +7,7 @@ const tracker = (lat: number): Tracker => ({
   id: 1,
   name: 'a',
   color: '#00ff00',
+  icon: null,
   isDeployed: true,
   isActive: true,
   location: { lat, lng: 4.89, timestamp: new Date().toISOString(), accuracyMeters: 10 },

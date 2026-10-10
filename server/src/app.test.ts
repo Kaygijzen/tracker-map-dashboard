@@ -35,7 +35,7 @@ describe('GET /api/trackers', () => {
     expect(res.body.trackers).toHaveLength(2);
     expect(res.body.trackers.map((t: { id: number }) => t.id)).toEqual([1001, 1002]);
     for (const tracker of res.body.trackers) {
-      expect(Object.keys(tracker).sort()).toEqual(['color', 'id', 'isActive', 'isDeployed', 'location', 'name']);
+      expect(Object.keys(tracker).sort()).toEqual(['color', 'icon', 'id', 'isActive', 'isDeployed', 'location', 'name']);
       expect(Object.keys(tracker.location).sort()).toEqual(['accuracyMeters', 'lat', 'lng', 'timestamp']);
       expect(new Date(tracker.location.timestamp).toISOString()).toBe(tracker.location.timestamp);
     }

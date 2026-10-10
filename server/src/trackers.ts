@@ -6,6 +6,8 @@ export interface Tracker {
   id: number;
   name: string;
   color: string;
+  /** An emoji, or null when the entry has none. */
+  icon: string | null;
   isDeployed: boolean;
   isActive: boolean;
 }
@@ -24,12 +26,21 @@ export function colorToHex([r, g, b]: number[]): string {
   return `#${channelToHex(r)}${channelToHex(g)}${channelToHex(b)}`;
 }
 
+const EMOJI = /\p{Extended_Pictographic}|\p{Regional_Indicator}/u;
+
+/** Returns the entry's icon if it is an emoji. OpenHaystack SF Symbol names (e.g. `airtag`) yield null. */
+export function toEmojiIcon(icon: string | undefined): string | null {
+  const trimmed = icon?.trim();
+  return trimmed && EMOJI.test(trimmed) && [...trimmed].length <= 8 ? trimmed : null;
+}
+
 /** Builds the public shape field by field. Never spread `entry`: it holds secrets. */
 export function toTracker(entry: KeyEntry): Tracker {
   return {
     id: entry.id,
     name: entry.name,
     color: colorToHex(entry.colorComponents),
+    icon: toEmojiIcon(entry.icon),
     isDeployed: entry.isDeployed,
     isActive: entry.isActive,
   };

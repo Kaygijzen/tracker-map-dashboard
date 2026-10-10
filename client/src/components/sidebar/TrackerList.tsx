@@ -19,20 +19,28 @@ import { isStale } from '../../utils/stale';
 import { useSidebar } from '../AppShell';
 import { StatusChips } from '../common/StatusChips';
 
-function ColorDot({ color }: { color: string }) {
+function TrackerBadge({ color, icon }: { color: string; icon: string | null }) {
+  const size = icon ? 28 : 16;
   return (
     <Box
       aria-hidden
       sx={{
-        width: 16,
-        height: 16,
+        width: size,
+        height: size,
         borderRadius: '50%',
         bgcolor: color,
         border: 2,
         borderColor: 'background.paper',
         boxShadow: (t) => `0 0 0 1px ${t.palette.divider}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 15,
+        lineHeight: 1,
       }}
-    />
+    >
+      {icon}
+    </Box>
   );
 }
 
@@ -59,8 +67,8 @@ function TrackerListItem({
       alignItems="flex-start"
       data-tracker-id={tracker.id}
     >
-      <ListItemAvatar sx={{ minWidth: 32, mt: 1 }}>
-        <ColorDot color={tracker.color} />
+      <ListItemAvatar sx={{ minWidth: 40, mt: 0.75 }}>
+        <TrackerBadge color={tracker.color} icon={tracker.icon} />
       </ListItemAvatar>
       <ListItemText
         primary={tracker.name}

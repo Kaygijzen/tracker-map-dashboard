@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Tracker } from '../api/types';
 import { filterTrackers } from './filterTrackers';
 
-const t = (id: number, name: string): Tracker => ({ id, name, color: '#00ff00', isDeployed: true, isActive: false, location: null });
+const t = (id: number, name: string): Tracker => ({ id, name, color: '#00ff00', icon: null, isDeployed: true, isActive: false, location: null });
 const trackers = [t(6253030, 'rotokey_13'), t(5253030, 'rotokey_13'), t(42, 'Bike')];
 
 describe('filterTrackers', () => {
