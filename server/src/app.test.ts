@@ -1,7 +1,10 @@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { createApp } from './app.js';
+import { loadConfig } from './config.js';
+import { createLocationProvider } from './location/factory.js';
 import { MockLocationProvider } from './location/mock.js';
+import { ANISETTE_RESPONSE, FINDMY_SETTINGS, fakeFetch, testPrivateKey } from './test/findmy.js';
 import type { LocationProvider } from './location/provider.js';
 import { toTracker } from './trackers.js';
 import { SECRET_ACCOUNT, SECRET_ADDITIONAL_KEY, SECRET_PRIVATE_KEY, entries } from './test/fixtures.js';
@@ -43,6 +46,33 @@ describe('GET /api/trackers', () => {
     const res = await request(app(none)).get('/api/trackers');
     expect(res.body.trackers).toHaveLength(2);
     expect(res.body.trackers.every((t: { location: unknown }) => t.location === null)).toBe(true);
+  });
+
+  it('responds 200 with null locations when Find My rejects the token, without leaking secrets', async () => {
+    const config = loadConfig({
+      LOCATION_PROVIDER: 'findmy',
+      ANISETTE_URL: FINDMY_SETTINGS.anisetteUrl,
+      FINDMY_DSID: FINDMY_SETTINGS.dsid,
+      FINDMY_SEARCH_PARTY_TOKEN: FINDMY_SETTINGS.searchPartyToken,
+    });
+    const privateKeys = [testPrivateKey(), testPrivateKey()];
+    const findMyEntries = entries.map((entry, i) => ({ ...entry, privateKey: privateKeys[i] }));
+    const logs: string[] = [];
+    const logger = { warn: (m: string) => logs.push(m), error: (m: string) => logs.push(m) };
+    const fetch = fakeFetch({ apple: { status: 401 } });
+    const provider = createLocationProvider(config, findMyEntries, logger, { fetch });
+
+    const res = await request(app(provider)).get('/api/trackers');
+    expect(res.status).toBe(200);
+    expect(res.body.trackers.map((t: { id: number }) => t.id)).toEqual([1001, 1002]);
+    expect(res.body.trackers.every((t: { location: unknown }) => t.location === null)).toBe(true);
+    expect(fetch.appleCalls()).toHaveLength(1);
+    expect(logs).toEqual(['Find My locations unavailable: Find My request failed with status 401']);
+
+    const secrets = [...privateKeys, FINDMY_SETTINGS.dsid, FINDMY_SETTINGS.searchPartyToken, SECRET_ACCOUNT];
+    for (const secret of [...secrets, ...Object.values(ANISETTE_RESPONSE).map(String)]) {
+      expect(res.text).not.toContain(secret);
+    }
   });
 
   it('never leaks private fields or values', async () => {
