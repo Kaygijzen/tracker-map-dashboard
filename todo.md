@@ -39,4 +39,4 @@ Research notes for the implementation (sources: [OpenHaystack](https://github.co
 
 ## 3. Cleanup
 
-- [ ] Remove the leftover worktree from the blocked Change 6 agent (gitignored, holds one uncommitted draft): `git worktree remove --force .claude/worktrees/agent-ace4f82f54f803f94`, then `git branch -D worktree-agent-ace4f82f54f803f94` if that branch still exists.
+- [x] Remove the leftover worktree from the blocked Change 6 agent (gitignored, holds one uncommitted draft): `git worktree remove --force .claude/worktrees/agent-ace4f82f54f803f94`, then `git branch -D worktree-agent-ace4f82f54f803f94` if that branch still exists.
